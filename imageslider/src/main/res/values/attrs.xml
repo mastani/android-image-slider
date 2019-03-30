@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ImageSlider">
+        <attr name="imageSlider_indicatorsVisibility" format="boolean" />
+        <attr name="imageSlider_indicatorSize" format="dimension" />
+        <attr name="imageSlider_selectedIndicator" format="reference" />
+        <attr name="imageSlider_unselectedIndicator" format="reference" />
+        <attr name="imageSlider_loop" format="boolean" />
+        <attr name="imageSlider_loopInterval" format="integer" />
+    </declare-styleable>
+</resources>
