@@ -2,13 +2,16 @@ package app.mastani.imageslider
 
 import android.content.Context
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.PagerSnapHelper
 import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
+import android.util.Log
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import app.mastani.imageslider.SnapHelper.Companion.NOTIFY_ON_SCROLL
 
 class ImageSlider : FrameLayout {
-    lateinit var recyclerView: RecyclerView
+    lateinit var rv: RecyclerView
     private val adapter by lazy { ImageSliderAdapter(context) }
 
     var indicatorVisibility: Boolean = true
@@ -27,7 +30,6 @@ class ImageSlider : FrameLayout {
     }
 
     private fun setup(attrs: AttributeSet? = null) {
-
         attrs?.let {
             val typedArray = context.obtainStyledAttributes(attrs, R.styleable.ImageSlider);
             indicatorVisibility = typedArray.getBoolean(R.styleable.ImageSlider_imageSlider_indicatorsVisibility, true)
@@ -40,18 +42,30 @@ class ImageSlider : FrameLayout {
     }
 
     private fun initialRecyclerView() {
-        val layoutParam = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-        val layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        val snapHelper = PagerSnapHelper()
 
-        recyclerView = RecyclerView(context)
-        recyclerView.layoutParams = layoutParam
-        recyclerView.layoutManager = layoutManager
-        recyclerView.adapter = adapter
+        rv = RecyclerView(context)
+        rv.apply {
+            layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+            layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+            adapter = this@ImageSlider.adapter
 
-        addView(recyclerView)
+            snapHelper.attachToRecyclerView(this)
+            addOnScrollListener(SnapHelper(snapHelper, NOTIFY_ON_SCROLL) { position ->
+                Log.d("ttttttttttttt", "selected " + position)
+            })
+        }
+
+        addView(rv)
     }
 
-    public fun setSlides(slides: ArrayList<Slide>) {
+    fun setSlides(slides: ArrayList<Slide>) {
+        adapter.removeAll()
         adapter.add(slides)
+        rv.scrollToPosition((Integer.MAX_VALUE / 2) - (Integer.MAX_VALUE / 2) % slides.size);
+    }
+
+    companion object {
+        lateinit var imageLoaderService: ImageLoaderService
     }
 }
