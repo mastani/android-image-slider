@@ -3,6 +3,7 @@ package app.mastani.imageslider.sample
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import app.mastani.imageslider.DrawableSlide
 import app.mastani.imageslider.ImageSlider
 import app.mastani.imageslider.ImageUrlSlide
@@ -19,26 +20,19 @@ class MainActivity : AppCompatActivity() {
         val slides = arrayListOf<Slide>(
             ImageUrlSlide("https://picsum.photos/600/300/?random").apply {
                 title = "Hey i'm first!"
-                interval = 1
                 onClick = View.OnClickListener {
-
+                    Toast.makeText(baseContext, "Hello!", Toast.LENGTH_LONG).show()
                 }
             },
 
             ImageUrlSlide("https://picsum.photos/600/300/?random&x").apply {
                 title = "Hey i'm second!"
-                interval = 1
-                onClick = View.OnClickListener {
-
-                }
+                interval = 5f
             },
 
             DrawableSlide(resources.getDrawable(R.drawable.ic_launcher_background)).apply {
                 title = "Hey i'm third!"
-                interval = 1
-                onClick = View.OnClickListener {
-
-                }
+                interval = 6f
             }
         )
 

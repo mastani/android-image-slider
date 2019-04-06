@@ -2,8 +2,6 @@ package app.mastani.imageslider
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
-import android.util.Log
-import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -11,7 +9,6 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 
 class ImageSliderAdapter(var context: Context) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    private var realPosition = -1
     private val slides by lazy { ArrayList<Slide>() }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -46,17 +43,16 @@ class ImageSliderAdapter(var context: Context) : RecyclerView.Adapter<RecyclerVi
         return Integer.MAX_VALUE
     }
 
-    private fun getItem(position: Int): Slide {
-        realPosition = position % slides.size
-        return slides[realPosition]
+    fun getItem(position: Int): Slide {
+        return slides[position % slides.size]
     }
 
     fun getRealSize(): Int {
         return this.slides.size
     }
 
-    fun getRealPosition(): Int {
-        return this.realPosition
+    fun calcRealPosition(current: Int): Int {
+        return current % slides.size
     }
 
     fun removeAll() {
@@ -74,6 +70,13 @@ class ImageSliderAdapter(var context: Context) : RecyclerView.Adapter<RecyclerVi
         init {
             (itemView as RelativeLayout).apply {
                 layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+            }
+        }
+
+        open fun <T : Slide> bind(slide: T) {
+            itemView.setOnClickListener {
+                slide.onClick?.onClick(itemView)
+                slide.interval
             }
         }
     }
@@ -107,7 +110,10 @@ class ImageSliderAdapter(var context: Context) : RecyclerView.Adapter<RecyclerVi
 
     class DrawableViewHolder(context: Context) : ImageViewHolder(context) {
 
-        fun bind(slide: DrawableSlide) {
+        override fun <T : Slide> bind(slide: T) {
+            super.bind(slide)
+
+            slide as DrawableSlide
             titleView.text = slide.title
             imageView.setImageDrawable(slide.drawable)
         }
@@ -115,7 +121,10 @@ class ImageSliderAdapter(var context: Context) : RecyclerView.Adapter<RecyclerVi
 
     class ImageUrlViewHolder(context: Context) : ImageViewHolder(context) {
 
-        fun bind(slide: ImageUrlSlide) {
+        override fun <T : Slide> bind(slide: T) {
+            super.bind(slide)
+
+            slide as ImageUrlSlide
             titleView.text = slide.title
             ImageSlider.imageLoaderService.loadImage(imageView, slide.URL)
         }
